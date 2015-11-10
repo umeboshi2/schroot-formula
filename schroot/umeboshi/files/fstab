@@ -1,0 +1,19 @@
+{% set pget = salt['pillar.get'] -%}
+# fstab: static file system information for chroots.
+# Note that the mount point will be prefixed by the chroot path
+# (CHROOT_PATH)
+#
+# <file system>	<mount point>	<type>	<options>	<dump>	<pass>
+{% set default_mounts = ['/proc', '/sys', '/dev', '/dev/pts', '/home', '/tmp'] %}
+{% for bindmnt in pget('schroot:bind_mounts', default_mounts): %}
+{{ bindmnt }}  {{ bindmnt }}  none  rw,bind 0 0
+{% endfor %}
+
+# It may be desirable to have access to /run, especially if you wish
+# to run additional services in the chroot.  However, note that this
+# may potentially cause undesirable behaviour on upgrades, such as
+# killing services on the host.
+#/run		/run		none	rw,bind		0	0
+#/run/lock	/run/lock	none	rw,bind		0	0
+#/dev/shm	/dev/shm	none	rw,bind		0	0
+#/run/shm	/run/shm	none	rw,bind		0	0
